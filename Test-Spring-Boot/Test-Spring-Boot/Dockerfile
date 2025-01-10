@@ -1,20 +1,27 @@
-# Use an official Java runtime as a parent image
-FROM openjdk:17-jdk-alpine AS build
+# Step 1: Use a builder image to compile the application
+FROM maven:3.9.4-eclipse-temurin-17-alpine AS build
 
-# Copy the application source code to the working directory
-COPY . .
+# Set the working directory for the build stage
+WORKDIR /app
 
-# Run Maven to build the application
-RUN ./mvnw clean package
+# Copy the Maven project files
+COPY pom.xml .
+COPY src ./src
 
-# Use a slim version of the JDK for the runtime image
+# Build the Spring Boot application
+RUN mvn clean package -DskipTests
+
+# Step 2: Use a lightweight runtime image for the application
 FROM openjdk:17-jdk-slim AS runtime
 
-# Copy the built application JAR file from the build stage
-COPY --from=build /build/libs/target/*.jar app.jar
+# Set the working directory for the runtime stage
+WORKDIR /app
 
-# Expose the application's port
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the application port
 EXPOSE 8080
 
-# Command to run the JAR file
+# Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]

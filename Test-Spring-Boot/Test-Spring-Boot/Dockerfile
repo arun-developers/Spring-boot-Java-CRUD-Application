@@ -2,7 +2,7 @@
 FROM maven:3.9.4-eclipse-temurin-17-alpine AS build
 
 # Set the working directory for the build stage
-WORKDIR /app
+WORKDIR /test-spring-boot
 
 # Copy the Maven project files
 COPY pom.xml .
@@ -15,13 +15,13 @@ RUN mvn clean package -DskipTests
 FROM openjdk:17-jdk-slim AS runtime
 
 # Set the working directory for the runtime stage
-WORKDIR /app
+WORKDIR /test-spring-boot
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /target/*.jar test-spring-boot.jar
 
 # Expose the application port
 EXPOSE 8080
 
 # Run the Spring Boot application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "test-spring-boot.jar"]

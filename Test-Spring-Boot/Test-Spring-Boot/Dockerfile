@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy the application source code to the working directory
 COPY . .
 
-# Run Maven to build the application
+# Run Maven to build the application file
 RUN ./mvnw clean package
 
 # Use a slim version of the JDK for the runtime image

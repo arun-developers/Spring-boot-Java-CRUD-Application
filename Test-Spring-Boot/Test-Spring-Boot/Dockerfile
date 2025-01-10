@@ -11,7 +11,7 @@ RUN ./mvnw clean package
 FROM openjdk:17-jdk-slim AS runtime
 
 # Copy the built application JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /build/libs/target/*.jar app.jar
 
 # Expose the application's port
 EXPOSE 8080

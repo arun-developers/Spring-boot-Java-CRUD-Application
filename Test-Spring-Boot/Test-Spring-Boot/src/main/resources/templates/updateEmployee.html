@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<title>Update Employee</title>
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			margin: 0;
+			padding: 0;
+			color: #333;
+			background-color: #f5f5f5;
+		}
+
+		.header {
+			color: white;
+			display: flex;
+			padding: 10px 20px;
+			align-items: center;
+			background-color: #2d89ef;
+			justify-content: space-between;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.header h1 {
+			font-size: 24px;
+			margin: 0;
+			color: white;
+			cursor: pointer;
+			font-family: 'Arial', sans-serif;
+		}
+
+		h1 i {
+			font-size: 28px;
+			color: #ffeb3b;
+		}
+
+		.modern-button {
+			gap: 8px;
+			margin: 0;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 16px;
+			padding: 10px 20px;
+			font-weight: bold;
+			border-radius: 5px;
+			align-items: center;
+			display: inline-flex;
+			text-decoration: none;
+			background-color: #4caf50;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.modern-button:hover {
+			background-color: #45a049;
+			transform: scale(1.05);
+		}
+
+		.modern-button i {
+			font-size: 18px;
+			color: white;
+		}
+
+		.update-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		.form-container {
+			width: 80%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+		}
+
+		form {
+			width: 60%;
+			padding: 20px;
+			border: 1px solid #ddd;
+			border-radius: 8px;
+			background-color: #fff;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			animation: fadeIn 0.5s ease-in-out;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.form-group {
+			margin-bottom: 10px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		.form-group input,
+		.form-group select {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 14px;
+			box-sizing: border-box;
+		}
+
+		.form-group button {
+			margin-top: 10px;
+		}
+
+
+		.toast {
+			top: 25px;
+			right: 25px;
+			display: none;
+			position: absolute;
+			border-radius: 12px;
+			background: #fff;
+			padding: 20px 35px 20px 25px;
+			box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			transform: translateX(calc(100% + 30px));
+			transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+		}
+
+		.toast.active {
+			transform: translateX(0%);
+			display: block;
+		}
+
+		.toast .toast-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.toast-content {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 35px;
+			min-width: 35px;
+			font-size: 20px;
+		}
+
+		.toast-content .error-icon {
+			padding: 4px;
+			color: #e74c3c;
+			border-radius: 50%;
+			border: 1px solid #e74c3c;
+		}
+
+		.toast-content .success-icon {
+			padding: 4px;
+			color: #2ecc71;
+			border-radius: 50%;
+			border: 1px solid #2ecc71;
+		}
+
+		.toast-content .message {
+			display: flex;
+			flex-direction: column;
+			margin: 0 20px;
+		}
+
+		.message .text {
+			font-size: 16px;
+			font-weight: 400;
+			color: #666666;
+		}
+
+		.message .text.text-1 {
+			font-weight: 600;
+			color: #333;
+		}
+
+		.toast .progress {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 3px;
+			width: 100%;
+
+		}
+
+		.toast .progress:before {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			height: 100%;
+			width: 100%;
+		}
+
+		.toast .success-progress:before {
+			background-color: #2ecc71;
+		}
+
+		.toast .error-progress:before {
+			background-color: #e74c3c;
+		}
+
+		.progress.active:before {
+			animation: progress 3s linear forwards;
+		}
+
+		@keyframes progress {
+			100% {
+				right: 100%;
+			}
+		}
+
+		.error-message {
+			color: red;
+			font-weight: bold;
+			font-size: 0.8em;
+			margin-top: 5px;
+			display: block;
+			margin-left: 5px;
+		}
+
+		.user-avatar {
+			padding: 10px;
+			color: #ffffff;
+			font-size: 24px;
+			font-weight: bold;
+			border-radius: 50%;
+			transition: transform 0.2s, box-shadow 0.2s;
+			box-shadow: 0 4px 10px rgb(0 0 0 / 5%);
+			background: linear-gradient(90deg, #07ea9fbf, #9a82d7e8);
+		}
+
+		.user-avatar:hover {
+			transform: scale(1.05);
+			box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+			cursor: pointer;
+		}
+
+		.modern-menu {
+			right: 0;
+			top: 59px;
+			display: none;
+			z-index: 1000;
+			overflow: hidden;
+			position: absolute;
+			background-color:#ffffff;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			animation: fadeIn 0.3s ease-in-out;
+		}
+
+		.menu-item {
+			gap: 6px;
+			margin: 0;
+			display: flex;
+			align-items: center;
+			padding: 12px 16px;
+			cursor: pointer;
+			font-size: 16px;
+			font-weight: 500;
+			color: #333;
+			text-decoration: none;
+			transition: background 0.2s, color 0.2s;
+		}
+
+		.menu-item:hover {
+			background: #f0f0f0;
+			color: #007bff;
+		}
+
+		.first-latter-capital {
+			text-transform: capitalize;
+		}
+
+		.modern-menu.show {
+			display: block;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(-10px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Header -->
+	<div class="header">
+		<h1 th:onclick="'window.location.href=\'' + @{/employees} + '\''">
+			<i class="fas fa-users"></i> Employees Portal (EPM)
+		</h1>
+		<div>
+			<a th:href="@{/addEmployee}" class="modern-button">
+				<i class="fas fa-plus icon-plus"></i>
+				Add Employee
+			</a>
+			<a onclick="toggleUserInfo(event)" th:title="${userDetails.name}" th:if="${userDetails != null}"
+				th:text="${userDetails.initials}" class="user-avatar">
+			</a>
+			<div class="modern-menu" id="toggleUserInfo">
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-user-tie icon"></i>
+					<span th:text="${userDetails.name}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-envelope icon"></i>
+					<span th:text="${userDetails.username}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-phone icon"></i>
+					<span th:text="${userDetails.contact}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-briefcase icon"></i>
+					<span th:text="${userDetails.role}"></span>
+				</p>
+				<a th:href="@{/logout}" class="menu-item first-latter-capital">
+					<i class="fas fa-sign-out-alt"></i>
+					<span>Logout</span>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="update-container">
+
+		<!-- success Message || Error Message -->
+		<div th:if="${successMessage != null || errorMessage != null}" class="toast active" id="toasterToggle">
+			<div class="toast-content">
+				<i class="fas fa-solid fa-times error-icon"
+					th:if="${errorMessage != null && !errorMessage.isEmpty()}"></i>
+				<i class="fas fa-solid fa-check success-icon"
+					th:if="${errorMessage == null || errorMessage.isEmpty()}"></i>
+				<div class="message">
+					<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? 'Error' : 'Success'}"
+						class="text text-1"></span>
+					<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? errorMessage : successMessage}"
+						class="text text-2"></span>
+				</div>
+			</div>
+			<div class="progress active"
+				th:classappend="${errorMessage != null && !errorMessage.isEmpty() ? 'error-progress' : 'success-progress'}">
+			</div>
+		</div>
+
+		<!-- Employee Form -->
+		<div th:if="${employee != null}" class="form-container">
+			<h2>Update Employee</h2>
+
+			<form th:action="@{/updateEmployee/{id}(id=${employee.id})}" th:object="${employee}" method="post">
+				<div class="form-group">
+					<label for="id">ID:</label>
+					<input type="text" id="id" name="id" th:value="${employee.id}" readonly />
+				</div>
+
+				<div class="form-group">
+					<label for="name">Name:</label>
+					<input type="text" id="name" name="name" th:value="${employee.name}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="position">Position:</label>
+					<input type="text" id="position" name="position" th:value="${employee.position}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="age">Age:</label>
+					<input type="number" id="age" name="age" th:value="${employee.age}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="gender">Gender:</label>
+					<select id="gender" name="gender" required>
+						<option value="Male" th:selected="${employee.gender == 'Male'}">Male</option>
+						<option value="Female" th:selected="${employee.gender == 'Female'}">Female</option>
+						<option value="Other" th:selected="${employee.gender == 'Other'}">Other</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="location">Location:</label>
+					<input type="text" id="location" name="location" th:value="${employee.location}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="experience">Experience:</label>
+					<input type="text" id="experience" name="experience" th:value="${employee.experience}" required />
+				</div>
+
+				<div class="form-group">
+					<button title="Click here to update employee" type="submit" class="modern-button"><i
+							class="fas fa-pencil-alt"></i>Update Employee</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+<script>
+	function toggleUserInfo(event) {
+		event.stopPropagation();
+		const menu = document.getElementById('toggleUserInfo');
+		if (menu.classList.contains('show')) {
+			menu.classList.remove('show');
+		} else {
+			menu.classList.toggle('show');
+		}
+	}
+</script>
+
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<title>Signup Page</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: Arial, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 195, 233, 0.8521533613445378) 100%);
+		}
+
+		.header {
+			color: white;
+			display: flex;
+			width: 100%;
+			padding: 10px 20px;
+			align-items: center;
+			background-color: #2d89ef;
+			justify-content: space-between;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.header h1 {
+			font-size: 24px;
+			margin: 0;
+			color: white;
+			cursor: pointer;
+			font-family: 'Arial', sans-serif;
+		}
+
+		h1 i {
+			font-size: 28px;
+			color: #ffeb3b;
+		}
+
+		.modern-button {
+			gap: 8px;
+			margin: 0;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 16px;
+			padding: 10px 20px;
+			font-weight: bold;
+			border-radius: 5px;
+			align-items: center;
+			display: inline-flex;
+			text-decoration: none;
+			background-color: #4caf50;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.modern-button:hover {
+			background-color: #45a049;
+			transform: scale(1.05);
+		}
+
+		.modern-button i {
+			font-size: 18px;
+			color: white;
+		}
+
+		.signup-container {
+			width: 500px;
+			background: #fff;
+			padding: 20px;
+			border-radius: 10px;
+			margin-top: 50px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		}
+
+		.signup-container h1,
+		p {
+			text-align: center;
+			margin-bottom: 20px;
+			color: #333;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+			font-size: 14px;
+			color: #333;
+		}
+
+		.form-group input,
+		.form-group select {
+			width: 100%;
+			padding: 10px;
+			font-size: 14px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+
+		.form-group input:focus,
+		.form-group select:focus {
+			border-color: #2d89ef;
+			outline: none;
+		}
+
+		.signup-btn {
+			width: 100%;
+			padding: 10px;
+			font-size: 16px;
+			font-weight: bold;
+			color: #fff;
+			background: #4caf50;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background 0.3s;
+		}
+
+		.signup-btn:hover {
+			background: #45a049;
+		}
+
+		.signup-btn:active {
+			background: #1a539a;
+		}
+
+		.proceed-to-login {
+			text-align: center;
+			margin-top: 10px;
+		}
+
+		.proceed-to-login a {
+			text-decoration: none;
+			color: #4caf50;
+			font-size: 14px;
+		}
+
+		.proceed-to-login a:hover {
+			text-decoration: underline;
+		}
+
+
+		.toast {
+			top: 25px;
+			right: 25px;
+			display: none;
+			position: absolute;
+			border-radius: 12px;
+			background: #fff;
+			padding: 20px 35px 20px 25px;
+			box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			transform: translateX(calc(100% + 30px));
+			transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+		}
+
+		.toast.active {
+			transform: translateX(0%);
+			display: block;
+		}
+
+		.toast .toast-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.toast-content {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 35px;
+			min-width: 35px;
+			font-size: 20px;
+		}
+
+		.toast-content .error-icon {
+			padding: 4px;
+			color: #e74c3c;
+			border-radius: 50%;
+			border: 1px solid #e74c3c;
+		}
+
+		.toast-content .success-icon {
+			padding: 4px;
+			color: #2ecc71;
+			border-radius: 50%;
+			border: 1px solid #2ecc71;
+		}
+
+		.toast-content .message {
+			display: flex;
+			flex-direction: column;
+			margin: 0 20px;
+		}
+
+		.message .text {
+			font-size: 16px;
+			font-weight: 400;
+			color: #666666;
+		}
+
+		.message .text.text-1 {
+			font-weight: 600;
+			color: #333;
+		}
+
+		.toast .progress {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 3px;
+			width: 100%;
+
+		}
+
+		.toast .progress:before {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			height: 100%;
+			width: 100%;
+		}
+
+		.toast .success-progress:before {
+			background-color: #2ecc71;
+		}
+
+		.toast .error-progress:before {
+			background-color: #e74c3c;
+		}
+
+		.progress.active:before {
+			animation: progress 3s linear forwards;
+		}
+
+		@keyframes progress {
+			100% {
+				right: 100%;
+			}
+		}
+
+		.error-message {
+			color: red;
+			font-weight: bold;
+			font-size: 0.8em;
+			margin-top: 5px;
+			display: block;
+			margin-left: 5px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Header -->
+	<div class="header">
+		<h1 th:onclick="'window.location.href=\'' + @{/} + '\''">
+			<i class="fas fa-users"></i> Employees Portal (EPM)
+		</h1>
+		<div>
+			<a th:href="@{/login}" class="modern-button">
+				<i class="fas fa-user"></i>
+				Login
+			</a>
+			<a th:href="@{/signup}" class="modern-button">
+				<i class="fas fa-user-plus"></i>
+				Sign Up
+			</a>
+		</div>
+	</div>
+
+
+	<!-- success Message || Error Message -->
+	<div th:if="${successMessage != null || errorMessage != null}" class="toast active" id="toasterToggle">
+		<div class="toast-content">
+			<i class="fas fa-solid fa-times error-icon" th:if="${errorMessage != null && !errorMessage.isEmpty()}"></i>
+			<i class="fas fa-solid fa-check success-icon" th:if="${errorMessage == null || errorMessage.isEmpty()}"></i>
+			<div class="message">
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? 'Error' : 'Success'}"
+					class="text text-1"></span>
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? errorMessage : successMessage}"
+					class="text text-2"></span>
+			</div>
+		</div>
+		<div class="progress active"
+			th:classappend="${errorMessage != null && !errorMessage.isEmpty() ? 'error-progress' : 'success-progress'}">
+		</div>
+	</div>
+
+	<div class="signup-container">
+		<h1>Sign Up</h1>
+		<p>Please fill in this form to create an account</p>
+		<form th:action="@{/signup}" th:object="${userRegister}" method="post" novalidate>
+			<div class="form-group">
+				<label for="name">Full Name</label>
+				<input type="text" id="name" name="name" th:field="*{name}" placeholder="Enter your full name" required>
+				<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message"></span>
+			</div>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" th:field="*{email}" placeholder="Enter your email" required>
+				<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+			</div>
+			<div class="form-group">
+				<label for="contact">Contact</label>
+				<input type="tel" id="contact" name="contact" th:field="*{contact}"
+					placeholder="Enter your contact number" required>
+				<span th:if="${#fields.hasErrors('contact')}" th:errors="*{contact}" class="error-message"></span>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" th:field="*{password}"
+					placeholder="Enter your password" required>
+				<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
+			</div>
+			<div class="form-group">
+				<label for="role">Role</label>
+				<select id="role" name="role" th:field="*{role}" required>
+					<option value="">Select your role</option>
+					<option value="md">MD</option>
+					<option value="ceo">CEO</option>
+					<option value="user">User</option>
+					<option value="guest">Guest</option>
+					<option value="admin">Admin</option>
+					<option value="manager">Manager</option>
+					<option value="employee">Employee</option>
+					<option value="manual tester">Manual Tester</option>
+					<option value="software developer">Software Developer</option>
+				</select>
+				<span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="error-message"></span>
+			</div>
+			<button type="submit" class="signup-btn">Submit</button>
+
+			<div class="proceed-to-login">
+				<a th:href="@{/login}">Proceed to login!</a>
+			</div>
+		</form>
+	</div>
+</body>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const successToast = document.getElementById("toasterToggle");
+		if (successToast) {
+			successToast.classList.add("active");
+			setTimeout(() => {
+				successToast.classList.remove("active");
+			}, 3000);
+		}
+	});
+</script>
+
+</html>

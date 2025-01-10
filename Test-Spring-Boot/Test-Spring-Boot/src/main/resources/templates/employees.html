@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<!-- <link rel="stylesheet" href="/css/employees.css"> -->
+	<title>Employees Portal</title>
+</head>
+
+<style>
+	body {
+		font-family: 'Arial', sans-serif;
+		margin: 0;
+		padding: 0;
+		color: #333;
+	}
+
+	.header {
+		color: white;
+		display: flex;
+		padding: 10px 20px;
+		align-items: center;
+		background-color: #2d89ef;
+		justify-content: space-between;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.header h1 {
+		font-size: 24px;
+		margin: 0;
+		color: white;
+		cursor: pointer;
+		font-family: 'Arial', sans-serif;
+	}
+
+	h1 i {
+		font-size: 28px;
+		color: #ffeb3b;
+	}
+
+	.modern-button {
+		gap: 8px;
+		margin: 0;
+		border: none;
+		color: white;
+		cursor: pointer;
+		font-size: 16px;
+		padding: 10px 20px;
+		font-weight: bold;
+		border-radius: 5px;
+		align-items: center;
+		display: inline-flex;
+		text-decoration: none;
+		background-color: #4caf50;
+		transition: background-color 0.3s ease, transform 0.2s ease;
+	}
+
+	.modern-button:hover {
+		background-color: #45a049;
+		transform: scale(1.05);
+	}
+
+	.modern-button i {
+		font-size: 18px;
+		color: white;
+	}
+
+	.employee-list {
+		gap: 10px;
+		padding: 10px;
+		display: grid;
+		overflow: auto;
+		height: calc(100vh - 79px);
+		grid-template-columns: auto auto auto auto;
+	}
+
+	.employee-details {
+		display: flex;
+		padding: 10px;
+		align-items: stretch;
+		flex-direction: column;
+		border-radius: 10px;
+		box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+	}
+
+	.avatar {
+		border-radius: 5% 5% 0% 0%;
+		object-fit: cover;
+	}
+
+	.details {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
+
+	.details p {
+		margin: 5px 0;
+		font-size: 16px;
+		color: #555;
+	}
+
+	.details p span {
+		font-weight: bold;
+		color: #333;
+	}
+
+	.actions {
+		display: flex;
+		gap: 10px;
+	}
+
+	.actions button {
+		flex: 1;
+		padding: 10px;
+		font-size: 16px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		transition: all 0.3s ease;
+	}
+
+	.actions .update {
+		background-color: #4caf50;
+		color: white;
+	}
+
+	.actions .update:hover {
+		background-color: #45a049;
+	}
+
+	.actions .delete {
+		background-color: #f44336;
+		color: white;
+	}
+
+	.actions .delete:hover {
+		background-color: #e53935;
+	}
+
+	.icon {
+		margin-right: 5px;
+	}
+
+	.icon-id {
+		color: #007BFF;
+	}
+
+	.icon-name {
+		color: #28A745;
+	}
+
+	.icon-position {
+		color: #FFC107;
+	}
+
+	.icon-age {
+		color: #17A2B8;
+	}
+
+	.icon-gender {
+		color: #6F42C1;
+	}
+
+	.icon-location {
+		color: #DC3545;
+	}
+
+	.icon-experience {
+		color: #FD7E14;
+	}
+
+	.icon-created {
+		color: #343A40;
+	}
+
+	.icon-updated {
+		color: #6C757D;
+	}
+
+	@media screen and (max-width: 600px) {
+		.employee-list {
+			flex-direction: column;
+			text-align: justify;
+			display: flex;
+		}
+
+		.employee-details {
+			box-shadow: none;
+		}
+
+		.avatar {
+			width: 100%;
+			height: auto;
+		}
+	}
+
+	.data-not-found {
+		gap: 10px;
+		display: flex;
+		align-items: center;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		padding: 15px 20px;
+		width: fit-content;
+		border-radius: 8px;
+		font-size: 18px;
+		background-color: #f8d7da;
+		color: #721c24;
+		border: 1px solid #f5c6cb;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		transform: translate(-50%, -50%);
+		transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+		animation: shake 0.3s ease-in-out;
+	}
+
+	.toast {
+		top: 25px;
+		right: 25px;
+		display: none;
+		position: absolute;
+		border-radius: 12px;
+		background: #fff;
+		padding: 20px 35px 20px 25px;
+		box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
+		transform: translateX(calc(100% + 30px));
+		transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+	}
+
+	.toast.active {
+		transform: translateX(0%);
+		display: block;
+	}
+
+	.toast .toast-content {
+		display: flex;
+		align-items: center;
+	}
+
+	.toast-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 35px;
+		min-width: 35px;
+		font-size: 20px;
+	}
+
+	.toast-content .error-icon {
+		padding: 4px;
+		color: #e74c3c;
+		border-radius: 50%;
+		border: 1px solid #e74c3c;
+	}
+
+	.toast-content .success-icon {
+		padding: 4px;
+		color: #2ecc71;
+		border-radius: 50%;
+		border: 1px solid #2ecc71;
+	}
+
+	.toast-content .message {
+		display: flex;
+		flex-direction: column;
+		margin: 0 20px;
+	}
+
+	.message .text {
+		font-size: 16px;
+		font-weight: 400;
+		color: #666666;
+	}
+
+	.message .text.text-1 {
+		font-weight: 600;
+		color: #333;
+	}
+
+	.toast .progress {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: 3px;
+		width: 100%;
+
+	}
+
+	.toast .progress:before {
+		content: "";
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		height: 100%;
+		width: 100%;
+	}
+
+	.toast .success-progress:before {
+		background-color: #2ecc71;
+	}
+
+	.toast .error-progress:before {
+		background-color: #e74c3c;
+	}
+
+	.progress.active:before {
+		animation: progress 3s linear forwards;
+	}
+
+	@keyframes progress {
+		100% {
+			right: 100%;
+		}
+	}
+
+	.user-avatar {
+		padding: 10px;
+		color: #ffffff;
+		font-size: 24px;
+		font-weight: bold;
+		border-radius: 50%;
+		transition: transform 0.2s, box-shadow 0.2s;
+		box-shadow: 0 4px 10px rgb(0 0 0 / 5%);
+		background: linear-gradient(90deg, #07ea9fbf, #9a82d7e8);
+	}
+
+	.user-avatar:hover {
+		transform: scale(1.05);
+		box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+		cursor: pointer;
+	}
+
+	.modern-menu {
+		right: 0;
+		top: 59px;
+		display: none;
+		z-index: 1000;
+		overflow: hidden;
+		position: absolute;
+		background-color: #ffffff;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		animation: fadeIn 0.3s ease-in-out;
+	}
+
+	.menu-item {
+		gap: 6px;
+		margin: 0;
+		display: flex;
+		align-items: center;
+		padding: 12px 16px;
+		cursor: pointer;
+		font-size: 16px;
+		font-weight: 500;
+		color: #333;
+		text-decoration: none;
+		transition: background 0.2s, color 0.2s;
+	}
+
+	.menu-item:hover {
+		background: #f0f0f0;
+		color: #007bff;
+	}
+
+	.first-latter-capital {
+		text-transform: capitalize;
+	}
+
+	.modern-menu.show {
+		display: block;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>
+
+<body>
+
+	<!-- Header -->
+	<div class="header" th:object=${userDetails}>
+		<h1>
+			<i class="fas fa-users"></i> Employees Portal (EPM)
+		</h1>
+		<div>
+			<a th:href="@{/addEmployee}" class="modern-button">
+				<i class="fas fa-plus icon-plus"></i>
+				Add Employee
+			</a>
+			<a onclick="toggleUserInfo(event)" th:title="${userDetails.name}" th:if="${userDetails != null}"
+				th:text="${userDetails.initials}" class="user-avatar">
+			</a>
+			<div class="modern-menu" id="toggleUserInfo">
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-user-tie icon"></i>
+					<span th:text="${userDetails.name}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-envelope icon"></i>
+					<span th:text="${userDetails.username}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-phone icon"></i>
+					<span th:text="${userDetails.contact}"></span>
+				</p>
+				<p class="menu-item first-latter-capital">
+					<i class="fas fa-briefcase icon"></i>
+					<span th:text="${userDetails.role}"></span>
+				</p>
+				<a th:href="@{/logout}" class="menu-item first-latter-capital">
+					<i class="fas fa-sign-out-alt"></i>
+					<span>Logout</span>
+				</a>
+			</div>
+
+		</div>
+	</div>
+
+	<!-- Data Not Found Message -->
+	<div th:if="${dataNotFound != null}" class="data-not-found">
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+			width="24px" height="24px">
+			<path stroke-linecap="round" stroke-linejoin="round"
+				d="M12 9v2m0 4h.01m-6.938 4h13.856c1.054 0 1.502-1.276.732-1.95L13.732 4.05a1.5 1.5 0 00-2.464 0L4.34 16.05c-.77.674-.322 1.95.732 1.95z" />
+		</svg>
+		<p th:text="${dataNotFound}"></p>
+	</div>
+
+	<!-- success Message || Error Message -->
+	<div th:if="${successMessage != null || errorMessage != null}" class="toast active" id="toasterToggle">
+		<div class="toast-content">
+			<i class="fas fa-solid fa-times error-icon" th:if="${errorMessage != null && !errorMessage.isEmpty()}"></i>
+			<i class="fas fa-solid fa-check success-icon" th:if="${errorMessage == null || errorMessage.isEmpty()}"></i>
+			<div class="message">
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? 'Error' : 'Success'}"
+					class="text text-1"></span>
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? errorMessage : successMessage}"
+					class="text text-2"></span>
+			</div>
+		</div>
+		<div class="progress active"
+			th:classappend="${errorMessage != null && !errorMessage.isEmpty() ? 'error-progress' : 'success-progress'}">
+		</div>
+	</div>
+
+	<!-- Employees body -->
+	<div class="employee-list">
+		<div class="employee-details" th:each="employee : ${employees}">
+			<img class="avatar" th:src="@{'https://i.pravatar.cc/200?u=' + ${employee.id}}" alt="Employee Avatar">
+			<div class="details">
+				<p> <i class="fas fa-user icon icon-id"></i><span>ID:</span> <span th:text="${employee.id}"></span>
+				</p>
+				<p><i class="fas fa-user-tie icon icon-name"></i><span>Name:</span> <span
+						th:text="${employee.name}"></span></p>
+				<p><i class="fas fa-briefcase icon icon-position"></i><span>Position:</span> <span
+						th:text="${employee.position}"></span></p>
+				<p><i class="fas fa-birthday-cake icon icon-age"></i><span>Age:</span> <span
+						th:text="${employee.age}"></span></p>
+				<p><i class="fas fa-venus-mars icon icon-gender"></i><span>Gender:</span> <span
+						th:text="${employee.gender}"></span></p>
+				<p><i class="fas fa-map-marker-alt icon icon-location"></i><span>Location:</span> <span
+						th:text="${employee.location}"></span></p>
+				<p><i class="fas fa-clock icon icon-experience"></i><span>Experience:</span> <span
+						th:text="${employee.experience}"></span></p>
+				<p><i class="fas fa-calendar-alt icon icon-created"></i><span>Created At:</span> <span
+						th:text="${employee.createdAt}"></span></p>
+				<p><i class="fas fa-sync-alt icon icon-updated"></i><span>Updated At:</span> <span
+						th:text="${employee.updatedAt}"></span></p>
+			</div>
+			<div class="actions">
+				<button th:onclick="'window.location.href=\'/updateEmployee/' + ${employee.id} + '\''" class="update"
+					title="Update Employee">
+					<i class="fas fa-pencil-alt"></i>
+				</button>
+				<button th:onclick="'window.location.href=\'/delete/emp/' + ${employee.id} + '\''" class="delete"
+					title="Delete Employee" data-employee-id="${employee.id}"><i class="fas fa-trash-alt"></i></button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const successToast = document.getElementById("toasterToggle");
+		if (successToast) {
+			successToast.classList.add("active");
+			setTimeout(() => {
+				successToast.classList.remove("active");
+			}, 3000);
+		}
+	});
+	function toggleUserInfo(event) {
+		event.stopPropagation();
+		const menu = document.getElementById('toggleUserInfo');
+		if (menu.classList.contains('show')) {
+			menu.classList.remove('show');
+		} else {
+			menu.classList.toggle('show');
+		}
+	}
+</script>
+
+</html>

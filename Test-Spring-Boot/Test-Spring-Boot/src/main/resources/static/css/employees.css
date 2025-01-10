@@ -1,0 +1,179 @@
+body {
+	font-family: 'Arial', sans-serif;
+	margin: 0;
+	padding: 0;
+	color: #333;
+}
+
+.header {
+	color: white;
+	display: flex;
+	padding: 10px 20px;
+	align-items: center;
+	background-color: #2d89ef;
+	justify-content: space-between;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+	font-size: 24px;
+	margin: 0;
+	color: white;
+	font-family: 'Arial', sans-serif;
+}
+
+.modern-button {
+	gap: 8px;
+	margin: 0;
+	border: none;
+	color: white;
+	cursor: pointer;
+	font-size: 16px;
+	padding: 10px 20px;
+	font-weight: bold;
+	border-radius: 5px;
+	align-items: center;
+	display: inline-flex;
+	text-decoration: none;
+	background-color: #4caf50;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modern-button:hover {
+	background-color: #45a049;
+	transform: scale(1.05);
+}
+
+.modern-button i {
+	font-size: 18px;
+	color: white;
+}
+
+.employee-list {
+	gap: 10px;
+	display: grid;
+	padding: 10px;
+	grid-template-columns: auto auto auto auto;
+}
+
+.employee-details {
+	display: flex;
+	padding: 10px;
+	align-items: stretch;
+	flex-direction: column;
+	border-radius: 10px;
+	box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+.avatar {
+	border-radius: 5% 5% 0% 0%;
+	object-fit: cover;
+}
+
+.details {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.details p {
+	margin: 5px 0;
+	font-size: 16px;
+	color: #555;
+}
+
+.details p span {
+	font-weight: bold;
+	color: #333;
+}
+
+.actions {
+	display: flex;
+	gap: 10px;
+}
+
+.actions button {
+	flex: 1;
+	padding: 10px;
+	font-size: 16px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.actions .update {
+	background-color: #4caf50;
+	color: white;
+}
+
+.actions .update:hover {
+	background-color: #45a049;
+}
+
+.actions .delete {
+	background-color: #f44336;
+	color: white;
+}
+
+.actions .delete:hover {
+	background-color: #e53935;
+}
+
+.icon {
+	margin-right: 5px;
+}
+
+.icon-id {
+	color: #007BFF;
+}
+
+.icon-name {
+	color: #28A745;
+}
+
+.icon-position {
+	color: #FFC107;
+}
+
+.icon-age {
+	color: #17A2B8;
+}
+
+.icon-gender {
+	color: #6F42C1;
+}
+
+.icon-location {
+	color: #DC3545;
+}
+
+.icon-experience {
+	color: #FD7E14;
+}
+
+.icon-created {
+	color: #343A40;
+}
+
+.icon-updated {
+	color: #6C757D;
+}
+
+@media screen and (max-width: 600px) {
+	.employee-list {
+		flex-direction: column;
+		text-align: justify;
+		display: flex;
+	}
+
+	.employee-details {
+		box-shadow: none;
+	}
+
+	.avatar {
+		width: 100%;
+		height: auto;
+	}
+}

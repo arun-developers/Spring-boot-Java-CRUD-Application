@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<title>Login Page</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Arial', sans-serif;
+		}
+
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			background: radial-gradient(circle, rgba(238, 174, 202, 1) 0%, rgba(148, 195, 233, 0.8521533613445378) 100%);
+		}
+
+		.header {
+			color: white;
+			display: flex;
+			width: 100%;
+			padding: 10px 20px;
+			align-items: center;
+			background-color: #2d89ef;
+			justify-content: space-between;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.header h1 {
+			font-size: 24px;
+			margin: 0;
+			color: white;
+			cursor: pointer;
+			font-family: 'Arial', sans-serif;
+		}
+
+
+		h1 i {
+			font-size: 28px;
+			color: #ffeb3b;
+		}
+
+		.modern-button {
+			gap: 8px;
+			margin: 0;
+			border: none;
+			color: white;
+			cursor: pointer;
+			font-size: 16px;
+			padding: 10px 20px;
+			font-weight: bold;
+			border-radius: 5px;
+			align-items: center;
+			display: inline-flex;
+			text-decoration: none;
+			background-color: #4caf50;
+			transition: background-color 0.3s ease, transform 0.2s ease;
+		}
+
+		.modern-button:hover {
+			background-color: #45a049;
+			transform: scale(1.05);
+		}
+
+		.modern-button i {
+			font-size: 18px;
+			color: white;
+		}
+
+		.login-container {
+			background: #ffffff;
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			width: 100%;
+			max-width: 500px;
+			padding: 30px;
+			margin-top: 50px;
+		}
+
+		.login-container h1,
+		p {
+			text-align: center;
+			margin-bottom: 20px;
+			color: #333;
+		}
+
+		.login-header {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.login-header h1 {
+			font-size: 24px;
+			color: #333;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-group label {
+			display: block;
+			font-size: 14px;
+			color: #555;
+			margin-bottom: 5px;
+		}
+
+		.form-group input {
+			width: 100%;
+			padding: 10px;
+			font-size: 14px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+		}
+
+		.form-group input:focus {
+			outline: none;
+			border-color: #4caf50;
+			box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+		}
+
+		.login-button {
+			background: #4caf50;
+			color: #fff;
+			border: none;
+			width: 100%;
+			padding: 10px;
+			font-size: 16px;
+			font-weight: bold;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background 0.3s;
+		}
+
+		.login-button:hover {
+			background: #45a049;
+		}
+
+		.login-button:active {
+			background: #1a539a;
+		}
+
+		.forgot-password {
+			text-align: center;
+			margin-top: 10px;
+		}
+
+		.forgot-password a {
+			text-decoration: none;
+			color: #4caf50;
+			font-size: 14px;
+		}
+
+		.forgot-password a:hover {
+			text-decoration: underline;
+		}
+
+
+		.toast {
+			top: 25px;
+			right: 25px;
+			display: none;
+			position: absolute;
+			border-radius: 12px;
+			background: #fff;
+			padding: 20px 35px 20px 25px;
+			box-shadow: 0 6px 20px -5px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			transform: translateX(calc(100% + 30px));
+			transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+		}
+
+		.toast.active {
+			transform: translateX(0%);
+			display: block;
+		}
+
+		.toast .toast-content {
+			display: flex;
+			align-items: center;
+		}
+
+		.toast-content {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 35px;
+			min-width: 35px;
+			font-size: 20px;
+		}
+
+		.toast-content .error-icon {
+			padding: 4px;
+			color: #e74c3c;
+			border-radius: 50%;
+			border: 1px solid #e74c3c;
+		}
+
+		.toast-content .success-icon {
+			padding: 4px;
+			color: #2ecc71;
+			border-radius: 50%;
+			border: 1px solid #2ecc71;
+		}
+
+		.toast-content .message {
+			display: flex;
+			flex-direction: column;
+			margin: 0 20px;
+		}
+
+		.message .text {
+			font-size: 16px;
+			font-weight: 400;
+			color: #666666;
+		}
+
+		.message .text.text-1 {
+			font-weight: 600;
+			color: #333;
+		}
+
+		.toast .progress {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 3px;
+			width: 100%;
+
+		}
+
+		.toast .progress:before {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			height: 100%;
+			width: 100%;
+		}
+
+		.toast .success-progress:before {
+			background-color: #2ecc71;
+		}
+
+		.toast .error-progress:before {
+			background-color: #e74c3c;
+		}
+
+		.progress.active:before {
+			animation: progress 3s linear forwards;
+		}
+
+		@keyframes progress {
+			100% {
+				right: 100%;
+			}
+		}
+
+		.error-message {
+			color: red;
+			font-weight: bold;
+			font-size: 0.8em;
+			margin-top: 5px;
+			display: block;
+			margin-left: 5px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Header -->
+	<div class="header">
+		<h1 th:onclick="'window.location.href=\'' + @{/} + '\''">
+			<i class="fas fa-users"></i> Employees Portal (EPM)
+		</h1>
+		<div>
+			<a th:href="@{/login}" class="modern-button">
+				<i class="fas fa-user"></i>
+				Login
+			</a>
+			<a th:href="@{/signup}" class="modern-button">
+				<i class="fas fa-user-plus"></i>
+				Sign Up
+			</a>
+		</div>
+	</div>
+
+
+	<!-- success Message || Error Message -->
+	<div th:if="${successMessage != null || errorMessage != null}" class="toast active" id="toasterToggle">
+		<div class="toast-content">
+			<i class="fas fa-solid fa-times error-icon" th:if="${errorMessage != null && !errorMessage.isEmpty()}"></i>
+			<i class="fas fa-solid fa-check success-icon" th:if="${errorMessage == null || errorMessage.isEmpty()}"></i>
+			<div class="message">
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? 'Error' : 'Success'}"
+					class="text text-1"></span>
+				<span th:text="${errorMessage != null && !errorMessage.isEmpty() ? errorMessage : successMessage}"
+					class="text text-2"></span>
+			</div>
+		</div>
+		<div class="progress active"
+			th:classappend="${errorMessage != null && !errorMessage.isEmpty() ? 'error-progress' : 'success-progress'}">
+		</div>
+	</div>
+
+	<div class="login-container">
+		<div class="login-header">
+			<h1>Login</h1>
+			<p>Please enter your login credentials</p>
+		</div>
+		<form th:action="@{/login}" th:object="${loginRequest}" method="post" novalidate>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" name="email" th:field="*{email}" placeholder="Enter your email"
+					required />
+				<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="password" id="password" name="password" th:field="*{password}"
+					placeholder="Enter your password" required />
+				<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-message"></span>
+			</div>
+			<button type="submit" class="login-button">Login</button>
+			<div class="forgot-password">
+				<a th:href="@{/forgotPassword}">Forgot your password?</a>
+			</div>
+		</form>
+	</div>
+</body>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		const successToast = document.getElementById("toasterToggle");
+		if (successToast) {
+			successToast.classList.add("active");
+			setTimeout(() => {
+				successToast.classList.remove("active");
+			}, 3000);
+		}
+	});
+
+</script>
+
+</html>

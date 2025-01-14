@@ -5,7 +5,7 @@ FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 WORKDIR /app
 
 # Copy the Maven project files
-COPY pom.xml .
+COPY pom.xml ./
 COPY src ./src
 
 # Build the Spring Boot application
@@ -18,10 +18,13 @@ FROM openjdk:17-jdk-slim AS runtime
 WORKDIR /app
 
 # Copy the JAR file from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/Test-Spring-Boot-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
 EXPOSE 8080
+
+# Optional: Add a health check
+HEALTHCHECK CMD curl --fail http://localhost:8080/actuator/health || exit 1
 
 # Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]

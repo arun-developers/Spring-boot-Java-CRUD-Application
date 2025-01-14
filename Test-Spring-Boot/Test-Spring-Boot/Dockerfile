@@ -1,5 +1,5 @@
 # Step 1: Use a builder image to compile the application
-FROM maven:3.9.4-eclipse-temurin-17-alpine AS build
+FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
 
 # Set the working directory for the build stage
 WORKDIR /app
@@ -9,7 +9,7 @@ COPY pom.xml .
 COPY src ./src
 
 # Build the Spring Boot application
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Step 2: Use a lightweight runtime image for the application
 FROM openjdk:17-jdk-slim AS runtime

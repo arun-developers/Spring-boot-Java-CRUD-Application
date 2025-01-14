@@ -1,13 +1,30 @@
-FROM maven:3.8.8-eclipse-temurin-17 AS builder
+# Step 1: Use a builder image to compile the application
+FROM maven:3.9.9-eclipse-temurin-17-alpine AS build
+
+# Set the working directory for the build stage
 WORKDIR /app
 
-# Add debugging commands
-RUN echo "Current files in build context:"
-RUN ls -la
-
-# Copy project files into the container
-COPY pom.xml .
+# Copy the Maven project files
+COPY pom.xml ./
 COPY src ./src
 
-# Build the application
+# Build the Spring Boot application
 RUN mvn clean package -DskipTests
+
+# Step 2: Use a lightweight runtime image for the application
+FROM openjdk:17-jdk-slim AS runtime
+
+# Set the working directory for the runtime stage
+WORKDIR /app
+
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/Test-Spring-Boot-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the application port
+EXPOSE 8080
+
+# Optional: Add a health check
+HEALTHCHECK CMD curl --fail http://localhost:8080/actuator/health || exit 1
+
+# Run the Spring Boot application
+ENTRYPOINT ["java", "-jar", "app.jar"]

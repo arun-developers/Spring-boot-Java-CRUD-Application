@@ -293,6 +293,13 @@
 				</div>
 
 				<div class="form-group">
+					<label for="position">Email:</label>
+					<input type="text" id="email" name="email" th:value="${employee.email}"
+						placeholder="e.g., test@gmail.com" required />
+					<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></span>
+				</div>
+
+				<div class="form-group">
 					<label for="position">Position:</label>
 					<input type="text" id="position" name="position" th:value="${employee.position}"
 						placeholder="e.g., Software Engineer" required />

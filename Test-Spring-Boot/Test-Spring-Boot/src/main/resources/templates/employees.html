@@ -73,7 +73,7 @@
 		display: grid;
 		overflow: auto;
 		height: calc(100vh - 79px);
-		grid-template-columns: auto auto auto auto;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 	}
 
 	.employee-details {
@@ -151,6 +151,10 @@
 
 	.icon-name {
 		color: #28A745;
+	}
+
+	.icon-envelope {
+		color: #DC143C;
 	}
 
 	.icon-position {
@@ -464,6 +468,8 @@
 				</p>
 				<p><i class="fas fa-user-tie icon icon-name"></i><span>Name:</span> <span
 						th:text="${employee.name}"></span></p>
+				<p><i class="fas fa-envelope icon icon-envelope"></i><span>Email:</span> <span
+						th:text="${employee.email}"></span></p>
 				<p><i class="fas fa-briefcase icon icon-position"></i><span>Position:</span> <span
 						th:text="${employee.position}"></span></p>
 				<p><i class="fas fa-birthday-cake icon icon-age"></i><span>Age:</span> <span

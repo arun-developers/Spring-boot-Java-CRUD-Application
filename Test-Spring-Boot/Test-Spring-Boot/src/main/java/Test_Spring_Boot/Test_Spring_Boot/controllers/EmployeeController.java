@@ -1,6 +1,8 @@
 package Test_Spring_Boot.Test_Spring_Boot.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.sql.Timestamp;
 
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import Test_Spring_Boot.Test_Spring_Boot.dto.EncryptedDataDTO;
@@ -27,6 +32,7 @@ import Test_Spring_Boot.Test_Spring_Boot.helpers.Response;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.ValidationMessage;
 import Test_Spring_Boot.Test_Spring_Boot.services.DataService;
 import Test_Spring_Boot.Test_Spring_Boot.services.EmployeeService;
+import Test_Spring_Boot.Test_Spring_Boot.services.QueueService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -38,6 +44,9 @@ public class EmployeeController {
 
 	@Autowired
 	private DataService dataService;
+
+	@Autowired
+	private QueueService queueService;
 
 	// POST METHOD TO ADD EMP
 	@PostMapping("/employee/add")
@@ -59,11 +68,28 @@ public class EmployeeController {
 			Employee savedEmployee = employeeService.saveEmployee(emp);
 			System.out.println("Saved Employee Details successfully!: " + savedEmployee);
 
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> payloadMap = new HashMap<>();
+
+			payloadMap.put("id", savedEmployee.getId());
+			payloadMap.put("name", savedEmployee.getName());
+			payloadMap.put("employeeId", savedEmployee.getEmployeeId());
+			payloadMap.put("position", savedEmployee.getPosition());
+			payloadMap.put("location", savedEmployee.getLocation());
+			payloadMap.put("emailId", savedEmployee.getEmail());
+			payloadMap.put("gender", savedEmployee.getGender());
+			payloadMap.put("experience", savedEmployee.getExperience());
+
+			// Convert the map to a JSON string
+			String payload = objectMapper.writeValueAsString(payloadMap);
+			queueService.addTask("employeeOnboardingNotification", payload);
+
 			// Create a DTO for the response
 			EncryptedDataDTO encryptedDataResponse = new EncryptedDataDTO(encryptedDataString);
 
 			return ResponseEntity.status(HttpStatus.CREATED)
-					.body(Response.success(HttpStatus.CREATED.value(), encryptedDataResponse, "Employee added successfully!", 0));
+					.body(Response.success(HttpStatus.CREATED.value(), encryptedDataResponse,
+							"Employee added successfully!", 0));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Response.error(500, "Failed to add employee: " + e.getMessage()));
@@ -115,12 +141,30 @@ public class EmployeeController {
 
 		try {
 			Employee employee = employeeService.updateEmployeeById(id, updatedEmployee);
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> payloadMap = new HashMap<>();
+			payloadMap.put("id", employee.getId());
+			payloadMap.put("name", employee.getName());
+			payloadMap.put("emailId", employee.getEmail());
+			payloadMap.put("employeeId", employee.getEmployeeId());
+			payloadMap.put("position", employee.getPosition());
+			payloadMap.put("location", employee.getLocation());
+			payloadMap.put("gender", employee.getGender());
+			payloadMap.put("experience", employee.getExperience());
+
+			// Convert the map to a JSON string
+			String payload = objectMapper.writeValueAsString(payloadMap);
+			queueService.addTask("employeeUpdateNotification", payload);
+
 			return ResponseEntity
-					.ok(Response.success(HttpStatus.OK.value(), employee, "Record with ID: " + id + " has been successfully updated", 0));
+					.ok(Response.success(HttpStatus.OK.value(), employee,
+							"Record with ID: " + id + " has been successfully updated", 0));
 		} catch (Exception e) {
 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(Response.error(HttpStatus.BAD_REQUEST.value(), "Error occurred while updating employee!: " + e.getMessage()));
+					.body(Response.error(HttpStatus.BAD_REQUEST.value(),
+							"Error occurred while updating employee!: " + e.getMessage()));
 		}
 	}
 
@@ -137,7 +181,8 @@ public class EmployeeController {
 					(isEncrypted ? "Encrypted " : "") + "Record with ID: " + id + " has been successfully deleted", 0));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(Response.error(HttpStatus.BAD_REQUEST.value(), "Error occurred while deleting employee!: " + e.getMessage()));
+					.body(Response.error(HttpStatus.BAD_REQUEST.value(),
+							"Error occurred while deleting employee!: " + e.getMessage()));
 		}
 	}
 }

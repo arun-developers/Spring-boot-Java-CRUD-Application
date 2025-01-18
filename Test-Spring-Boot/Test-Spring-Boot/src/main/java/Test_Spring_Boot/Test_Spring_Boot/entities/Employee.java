@@ -1,11 +1,14 @@
 package Test_Spring_Boot.Test_Spring_Boot.entities;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostPersist;
 import jakarta.validation.constraints.*;
 
 import lombok.AllArgsConstructor;
@@ -26,9 +29,16 @@ public class Employee {
 	@Min(value = 18, message = "Age must be greater than or equal to 18")
 	private int age;
 
+	private String employeeId;
+
 	@NotNull(message = "Name is required")
 	@NotEmpty(message = "Name cannot be empty")
 	private String name;
+
+	@Email(message = "Invalid email format")
+	@NotNull(message = "Email is required")
+	@NotEmpty(message = "Email cannot be empty")
+	private String email;
 
 	@NotNull(message = "Gender is required")
 	@NotEmpty(message = "Gender cannot be empty")
@@ -48,4 +58,12 @@ public class Employee {
 
 	Timestamp createdAt;
 	Timestamp updatedAt;
+
+	@PostPersist
+	private void generateEmployeeId() {
+		LocalDate now = LocalDate.now();
+		String yearMonth = now.format(DateTimeFormatter.ofPattern("yyMM"));
+		String formattedId = String.format("%04d", this.id);
+		this.employeeId = "EMP-" + yearMonth + "-" + formattedId;
+	}
 }

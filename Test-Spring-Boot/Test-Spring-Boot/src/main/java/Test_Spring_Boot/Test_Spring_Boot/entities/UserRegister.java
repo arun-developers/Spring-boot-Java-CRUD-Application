@@ -1,11 +1,14 @@
 package Test_Spring_Boot.Test_Spring_Boot.entities;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostPersist;
 import jakarta.validation.constraints.*;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +25,8 @@ public class UserRegister {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	private String userId;
 
 	@NotNull(message = "Name is required")
 	@NotEmpty(message = "Name cannot be empty")
@@ -47,4 +52,12 @@ public class UserRegister {
 
 	Timestamp createdAt;
 	Timestamp updatedAt;
+
+	@PostPersist
+	private void generateUserId() {
+		LocalDate now = LocalDate.now();
+		String yearMonth = now.format(DateTimeFormatter.ofPattern("yyMM"));
+		String formattedId = String.format("%04d", this.id);
+		this.userId = "USER-" + yearMonth + "-" + formattedId;
+	}
 }

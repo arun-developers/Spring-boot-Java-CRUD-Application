@@ -66,4 +66,11 @@ public class UserService {
 		}
 		userRepository.deleteById(id);
 	}
+
+	public UserRegister updateUserPasswordById(Long id, String newPassword) {
+		UserRegister existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User with ID " + id + " not found"));
+		existingUser.setPassword(newPassword);
+		existingUser.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+		return userRepository.save(existingUser);
+	}
 }

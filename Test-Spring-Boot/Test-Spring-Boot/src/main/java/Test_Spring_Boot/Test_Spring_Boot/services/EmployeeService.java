@@ -34,6 +34,7 @@ public class EmployeeService {
 				.orElseThrow(() -> new RuntimeException("Employee with ID " + id + " not found"));
 		existingEmployee.setAge(updatedEmployee.getAge());
 		existingEmployee.setName(updatedEmployee.getName());
+		existingEmployee.setEmail(updatedEmployee.getEmail());
 		existingEmployee.setGender(updatedEmployee.getGender());
 		existingEmployee.setPosition(updatedEmployee.getPosition());
 		existingEmployee.setLocation(updatedEmployee.getLocation());

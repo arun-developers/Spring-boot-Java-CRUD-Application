@@ -259,7 +259,7 @@
 			z-index: 1000;
 			overflow: hidden;
 			position: absolute;
-			background-color:#ffffff;
+			background-color: #ffffff;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 			animation: fadeIn 0.3s ease-in-out;
 		}
@@ -379,6 +379,11 @@
 				<div class="form-group">
 					<label for="name">Name:</label>
 					<input type="text" id="name" name="name" th:value="${employee.name}" required />
+				</div>
+
+				<div class="form-group">
+					<label for="name">Email:</label>
+					<input type="text" id="email" name="email" th:value="${employee.email}" required />
 				</div>
 
 				<div class="form-group">

@@ -1,7 +1,9 @@
 package Test_Spring_Boot.Test_Spring_Boot.pageControllers;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -19,10 +21,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import Test_Spring_Boot.Test_Spring_Boot.dto.UserDetailsDTO;
 import Test_Spring_Boot.Test_Spring_Boot.entities.Employee;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.CacheUtil;
 import Test_Spring_Boot.Test_Spring_Boot.services.EmployeeService;
+import Test_Spring_Boot.Test_Spring_Boot.services.QueueService;
 import jakarta.validation.Valid;
 
 @Controller
@@ -33,6 +39,9 @@ public class EmployeePageController {
 
 	@Autowired
 	private CacheManager cacheManager;
+
+	@Autowired
+	private QueueService queueService;
 
 	@GetMapping("/addEmployee")
 	public String createEmployee(Model model) {
@@ -50,10 +59,29 @@ public class EmployeePageController {
 	}
 
 	@PostMapping("/addEmployee")
-	public String createNewEmployee(@ModelAttribute @Valid Employee employee, RedirectAttributes redirectAttributes) {
+	public String createNewEmployee(@ModelAttribute @Valid Employee employee, RedirectAttributes redirectAttributes)
+			throws JsonProcessingException {
 		employee.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 		employee.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-		employeeService.saveEmployee(employee);
+
+		Employee savedEmployee = employeeService.saveEmployee(employee);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, Object> payloadMap = new HashMap<>();
+
+		payloadMap.put("id", savedEmployee.getId());
+		payloadMap.put("name", savedEmployee.getName());
+		payloadMap.put("employeeId", savedEmployee.getEmployeeId());
+		payloadMap.put("position", savedEmployee.getPosition());
+		payloadMap.put("location", savedEmployee.getLocation());
+		payloadMap.put("emailId", savedEmployee.getEmail());
+		payloadMap.put("gender", savedEmployee.getGender());
+		payloadMap.put("experience", savedEmployee.getExperience());
+
+		// Convert the map to a JSON string
+		String payload = objectMapper.writeValueAsString(payloadMap);
+		queueService.addTask("employeeOnboardingNotification", payload);
+
 		redirectAttributes.addFlashAttribute("successMessage", "New employee has been created successfully!");
 		return "redirect:/employees";
 	}
@@ -122,7 +150,25 @@ public class EmployeePageController {
 	public String updateEmployeeById(@PathVariable Long id, RedirectAttributes redirectAttributes, Employee employee) {
 		try {
 			Employee updatedEmployeeDetails = employeeService.updateEmployeeById(id, employee);
+
 			if (updatedEmployeeDetails != null) {
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				Map<String, Object> payloadMap = new HashMap<>();
+				
+				payloadMap.put("id", updatedEmployeeDetails.getId());
+				payloadMap.put("name", updatedEmployeeDetails.getName());
+				payloadMap.put("emailId", updatedEmployeeDetails.getEmail());
+				payloadMap.put("employeeId", updatedEmployeeDetails.getEmployeeId());
+				payloadMap.put("position", updatedEmployeeDetails.getPosition());
+				payloadMap.put("location", updatedEmployeeDetails.getLocation());
+				payloadMap.put("gender", updatedEmployeeDetails.getGender());
+				payloadMap.put("experience", updatedEmployeeDetails.getExperience());
+
+				// Convert the map to a JSON string
+				String payload = objectMapper.writeValueAsString(payloadMap);
+				queueService.addTask("employeeUpdateNotification", payload);
+
 				redirectAttributes.addFlashAttribute("successMessage",
 						"Employee with ID:" + id + "has been updated successfully!");
 			} else {

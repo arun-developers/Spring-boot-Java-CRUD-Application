@@ -10,8 +10,8 @@ COPY Test-Spring-Boot/Test-Spring-Boot/src ./src
 
 
 # Package the application
-RUN mvn clean package 
-
+RUN mvn clean package -X
+ 
 # Second stage: Run the application
 FROM eclipse-temurin:23-jdk-alpine
 WORKDIR /app

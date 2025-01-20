@@ -3,6 +3,7 @@ package Test_Spring_Boot.Test_Spring_Boot.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class QueueService {
 		return queueRepository.findAll();
 	}
 
+	// Method to find queue by task name
+	public Optional<Queue> findByTaskName(String taskName) {
+		return queueRepository.findByTaskName(taskName);
+	}
+
 	public void processTask(Queue task, String taskName) {
 
 		switch (taskName) {
@@ -45,14 +51,14 @@ public class QueueService {
 			case "employeeUpdateNotification":
 				handleUpdateEmployeeDetails(task);
 				break;
-			case "forgotPasswordNotification":
-				handleForgotPassword(task);
+			case "generateResetPasswordNotification":
+				handleGenerateResetPasswordLink(task);
 				break;
 			case "changePasswordNotification":
 				handleChangePassword(task);
 				break;
-			case "employeeReminderNotification":
-				handleEmployeeReminderEmail(task);
+			case "resetPasswordNotification":
+				handleResetPassword(task);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown task: " + taskName);
@@ -129,10 +135,29 @@ public class QueueService {
 		}
 	}
 
-	private void handleForgotPassword(Queue task) {
+	private void handleGenerateResetPasswordLink(Queue task) {
 		try {
-			// Write logic here
-			System.out.println("Invoked handleForgotPassword class");
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			@SuppressWarnings("unchecked")
+			Map<String, Object> payloadMap = objectMapper.readValue(task.getPayload(), Map.class);
+
+			String name = (String) payloadMap.get("name");
+			String emailId = (String) payloadMap.get("emailId");
+			String url = (String) payloadMap.get("url");
+
+			Map<String, Object> forgotPasswordMessageObj = new HashMap<>();
+
+			forgotPasswordMessageObj.put("name", name);
+			forgotPasswordMessageObj.put("emailId", emailId);
+			forgotPasswordMessageObj.put("url", url);
+
+			String forgotPasswordSubject = Messages.GENERATE_RESET_PASSWORD_SUBJECT;
+			String forgotPasswordMessage = Messages.prepareMessage("GENERATE_RESET_PASSWORD_LINK",
+					forgotPasswordMessageObj);
+
+			emailService.sendHtmlEmail(emailId, forgotPasswordSubject, forgotPasswordMessage);
+
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process task payload", e);
 		}
@@ -159,20 +184,37 @@ public class QueueService {
 			changePasswordObj.put("role", role);
 			changePasswordObj.put("contact", contact);
 
-			String updateSubject = Messages.CHANGE_USER_PASSWORD_SUBJECT;
-			String updateMessage = Messages.prepareMessage("CHANGE_PASSWORD", changePasswordObj);
+			String changePasswordSubject = Messages.CHANGE_USER_PASSWORD_SUBJECT;
+			String changePasswordMessage = Messages.prepareMessage("CHANGE_PASSWORD", changePasswordObj);
 
-			emailService.sendHtmlEmail(emailId, updateSubject, updateMessage);
+			emailService.sendHtmlEmail(emailId, changePasswordSubject, changePasswordMessage);
 
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process task payload", e);
 		}
 	}
 
-	private void handleEmployeeReminderEmail(Queue task) {
+	private void handleResetPassword(Queue task) {
 		try {
-			// Write logic here
-			System.out.println("Invoked handleEmployeeReminderEmail class");
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			@SuppressWarnings("unchecked")
+			Map<String, Object> payloadMap = objectMapper.readValue(task.getPayload(), Map.class);
+
+			String name = (String) payloadMap.get("name");
+			String emailId = (String) payloadMap.get("emailId");
+			String userId = (String) payloadMap.get("userId");
+
+			Map<String, Object> resetPasswordObj = new HashMap<>();
+
+			resetPasswordObj.put("name", name);
+			resetPasswordObj.put("emailId", emailId);
+			resetPasswordObj.put("userId", userId);
+
+			String resetPasswordSubject = Messages.RESET_PASSWORD_SUBJECT;
+			String resetPasswordMessage = Messages.prepareMessage("RESET_PASSWORD", resetPasswordObj);
+
+			emailService.sendHtmlEmail(emailId, resetPasswordSubject, resetPasswordMessage);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process task payload", e);
 		}

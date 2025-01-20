@@ -35,6 +35,11 @@ public class UserService {
 		return userRepository.findByName(name);
 	}
 
+	// Method to find a user by userId
+	public Optional<UserRegister> findByUserId(String userId) {
+		return userRepository.findByUserId(userId);
+	}
+
 	// Method to save a new user
 	public UserRegister saveUser(UserRegister user) {
 		return userRepository.save(user);
@@ -68,7 +73,8 @@ public class UserService {
 	}
 
 	public UserRegister updateUserPasswordById(Long id, String newPassword) {
-		UserRegister existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User with ID " + id + " not found"));
+		UserRegister existingUser = userRepository.findById(id)
+				.orElseThrow(() -> new RuntimeException("User with ID " + id + " not found"));
 		existingUser.setPassword(newPassword);
 		existingUser.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 		return userRepository.save(existingUser);

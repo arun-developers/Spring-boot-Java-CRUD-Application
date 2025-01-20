@@ -28,7 +28,9 @@ public class SecurityConfig {
 				.cors(cors -> cors.disable())
 				.authorizeHttpRequests(
 						auth -> auth
-								.requestMatchers("/", "/login", "/signup", "/forgotPassword", "/changePassword", "/api/login", "api/signup", "/error")
+								.requestMatchers("/", "/login", "/signup", "/generateResetPasswordLink",
+										"/changePassword", "/resetPassword/**", "/api/login", "api/signup",
+										"/error")
 								.permitAll()
 								.requestMatchers(HttpMethod.DELETE, "/api/employee/delete/**").hasAuthority("ADMIN")
 								.anyRequest().authenticated())

@@ -3,10 +3,11 @@ package Test_Spring_Boot.Test_Spring_Boot.controllers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.sql.Timestamp;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import Test_Spring_Boot.Test_Spring_Boot.dto.EncryptedDataDTO;
+import Test_Spring_Boot.Test_Spring_Boot.dto.UserDetailsDTO;
 import Test_Spring_Boot.Test_Spring_Boot.entities.Employee;
+import Test_Spring_Boot.Test_Spring_Boot.helpers.CacheUtil;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.Response;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.ValidationMessage;
 import Test_Spring_Boot.Test_Spring_Boot.services.DataService;
@@ -48,6 +51,9 @@ public class EmployeeController {
 	@Autowired
 	private QueueService queueService;
 
+	@Autowired
+	private CacheManager cacheManager;
+
 	// POST METHOD TO ADD EMP
 	@PostMapping("/employee/add")
 	public ResponseEntity<Response> addEmployee(@Valid @RequestBody Employee emp, BindingResult result) {
@@ -58,9 +64,6 @@ public class EmployeeController {
 					.body(Response.error(HttpStatus.BAD_REQUEST.value(), errors));
 		}
 		try {
-			emp.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-			emp.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-
 			// Encrypt the employee object fields after validation
 			String encryptedDataString = dataService.encryptObject(emp);
 
@@ -109,8 +112,15 @@ public class EmployeeController {
 			Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 			Pageable pageable = PageRequest.of(page, size, sort);
 
+			// Retrieve logged-in user details from cache
+			Cache loggedInUsersCache = cacheManager.getCache("loggedInUsers");
+			UserDetailsDTO loggedInUserDetails = CacheUtil.getCachedUserDetails(loggedInUsersCache, "loggedInUser",
+					UserDetailsDTO.class);
+
 			// Fetch paginated employee data
-			Page<Employee> pageableEmployeesList = employeeService.getAllEmployees(pageable);
+			Page<Employee> pageableEmployeesList = "admin".equals(loggedInUserDetails.getRole())
+					? employeeService.getAllEmployees(pageable)
+					: employeeService.getEmployeeByCreatedByUserId(loggedInUserDetails.getUserId(), pageable);
 			List<Employee> employeeList = pageableEmployeesList.getContent();
 
 			// Total pages available

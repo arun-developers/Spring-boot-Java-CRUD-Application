@@ -1,6 +1,5 @@
 package Test_Spring_Boot.Test_Spring_Boot.services;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +59,6 @@ public class UserService {
 		existingUser.setName(updatedUser.getName());
 		existingUser.setRole(updatedUser.getRole());
 		existingUser.setPassword(updatedUser.getPassword());
-		existingUser.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 		return userRepository.save(existingUser);
 	}
 
@@ -76,7 +74,6 @@ public class UserService {
 		UserRegister existingUser = userRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("User with ID " + id + " not found"));
 		existingUser.setPassword(newPassword);
-		existingUser.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 		return userRepository.save(existingUser);
 	}
 }

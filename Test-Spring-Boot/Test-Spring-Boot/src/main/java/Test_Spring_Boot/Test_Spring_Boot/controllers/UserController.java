@@ -15,21 +15,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import Test_Spring_Boot.Test_Spring_Boot.helpers.AvatarCreator;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.JwtUtil;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.PasswordValidator;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.Response;
 import Test_Spring_Boot.Test_Spring_Boot.authenticationRequest.AuthenticationRequest;
 import Test_Spring_Boot.Test_Spring_Boot.entities.UserRegister;
 import Test_Spring_Boot.Test_Spring_Boot.helpers.ValidationMessage;
+import Test_Spring_Boot.Test_Spring_Boot.services.CustomUserDetails;
 import Test_Spring_Boot.Test_Spring_Boot.services.CustomUserDetailsService;
 import Test_Spring_Boot.Test_Spring_Boot.services.UserService;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,6 +57,9 @@ public class UserController {
 
 	@Autowired
 	private CustomUserDetailsService customUserDetailsService;
+
+	@Autowired
+	private CacheManager cacheManager;
 
 	// User signup route
 	@PostMapping("/signup")
@@ -78,11 +86,9 @@ public class UserController {
 		try {
 			String hashedPassword = passwordEncoder.encode(payload.getPassword());
 			payload.setPassword(hashedPassword);
-			payload.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-			payload.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 			userService.saveUser(payload);
 			return ResponseEntity.status(HttpStatus.CREATED)
-					.body(Response.success(201, payload, "Employee added successfully!", 0));
+					.body(Response.success(201, payload, "User created successfully!", 0));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Response.error(500, "Failed to add employee: " + e.getMessage()));
@@ -165,11 +171,26 @@ public class UserController {
 					authenticationRequest.getUsername(), authenticationRequest.getPassword()));
 
 			UserDetails userDetails = customUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+			CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
 			String token = jwtUtil.generateToken(userDetails);
 			Map<String, Object> responseData = new HashMap<>();
+			ObjectMapper objectMapper = new ObjectMapper();
+
+			@SuppressWarnings("unchecked")
+			Map<String, Object> userDetailsMap = objectMapper.convertValue(customUserDetails, Map.class);
+			userDetailsMap.keySet().removeAll(List.of("authorities", "password"));
+			String getInitials = AvatarCreator.getInitials(customUserDetails.getName());
+			userDetailsMap.put("initials", getInitials);
+			String userDetailsJson = objectMapper.writeValueAsString(userDetailsMap);
 
 			responseData.put("token", token);
 			responseData.put("userDetails", userDetails);
+
+			Cache loggedInUsersCache = cacheManager.getCache("loggedInUsers");
+			// Store user details in cache
+			if (loggedInUsersCache != null) {
+				loggedInUsersCache.put("loggedInUser", userDetailsJson);
+			}
 
 			return ResponseEntity.ok(Response.success(200, responseData, "User login successfully!", 0));
 		} catch (Exception e) {

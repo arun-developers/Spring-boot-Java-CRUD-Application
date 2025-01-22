@@ -12,6 +12,7 @@ import Test_Spring_Boot.Test_Spring_Boot.entities.UserRegister;
 
 public class CustomUserDetails implements UserDetails {
 	private Long id;
+	private String userId;
 	private String email;
 	private String password;
 	private String contact;
@@ -21,6 +22,7 @@ public class CustomUserDetails implements UserDetails {
 
 	public CustomUserDetails(UserRegister user) {
 		this.id = user.getId();
+		this.userId = user.getUserId();
 		this.email = user.getEmail();
 		this.password = user.getPassword();
 		this.contact = user.getContact();
@@ -40,6 +42,10 @@ public class CustomUserDetails implements UserDetails {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getUserId() {
+		return userId;
 	}
 
 	@Override

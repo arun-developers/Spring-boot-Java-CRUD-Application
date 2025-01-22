@@ -103,7 +103,10 @@ public class EmployeePageController {
 				UserDetailsDTO.class);
 
 		// Fetch paginated employee data
-		Page<Employee> pageableEmployeesList = employeeService.getAllEmployees(pageable);
+
+		Page<Employee> pageableEmployeesList = "admin".equals(loggedInUserDetails.getRole())
+				? employeeService.getAllEmployees(pageable)
+				: employeeService.getEmployeeByCreatedByUserId(loggedInUserDetails.getUserId(), pageable);
 		List<Employee> employeeList = pageableEmployeesList.getContent();
 
 		try {
@@ -155,7 +158,7 @@ public class EmployeePageController {
 
 				ObjectMapper objectMapper = new ObjectMapper();
 				Map<String, Object> payloadMap = new HashMap<>();
-				
+
 				payloadMap.put("id", updatedEmployeeDetails.getId());
 				payloadMap.put("name", updatedEmployeeDetails.getName());
 				payloadMap.put("emailId", updatedEmployeeDetails.getEmail());

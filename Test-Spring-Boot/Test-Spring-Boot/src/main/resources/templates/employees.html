@@ -185,23 +185,6 @@
 		color: #6C757D;
 	}
 
-	@media screen and (max-width: 600px) {
-		.employee-list {
-			flex-direction: column;
-			text-align: justify;
-			display: flex;
-		}
-
-		.employee-details {
-			box-shadow: none;
-		}
-
-		.avatar {
-			width: 100%;
-			height: auto;
-		}
-	}
-
 	.data-not-found {
 		gap: 10px;
 		display: flex;
@@ -378,6 +361,10 @@
 		display: block;
 	}
 
+	.is-desktop {
+		display: none;
+	}
+
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
@@ -387,6 +374,39 @@
 		to {
 			opacity: 1;
 			transform: translateY(0);
+		}
+	}
+
+	@media screen and (max-width: 600px) {
+		.employee-list {
+			flex-direction: column;
+			text-align: justify;
+			display: flex;
+		}
+
+		.employee-details {
+			box-shadow: none;
+		}
+
+		.avatar {
+			width: 100%;
+			height: auto;
+		}
+
+		.is-mobile {
+			display: none;
+		}
+
+		.is-desktop {
+			display: block;
+		}
+
+		.header {
+			padding: 10px 10px;
+		}
+
+		.data-not-found {
+			width: 85%;
 		}
 	}
 </style>
@@ -399,7 +419,7 @@
 			<i class="fas fa-users"></i> Employees Portal (EPM)
 		</h1>
 		<div>
-			<a th:href="@{/addEmployee}" class="modern-button">
+			<a th:href="@{/addEmployee}" class="modern-button is-mobile">
 				<i class="fas fa-plus icon-plus"></i>
 				Add Employee
 			</a>
@@ -422,6 +442,11 @@
 				<p class="menu-item first-latter-capital">
 					<i class="fas fa-briefcase icon"></i>
 					<span th:text="${userDetails.role}"></span>
+				</p>
+				<p th:onclick="'window.location.href=\'' + @{/addEmployee} + '\''"
+					class="menu-item first-latter-capital is-desktop">
+					<i class="fas fa-user-plus"></i>
+					<span>Add New Employee</span>
 				</p>
 				<a th:href="@{/logout}" class="menu-item first-latter-capital">
 					<i class="fas fa-sign-out-alt"></i>

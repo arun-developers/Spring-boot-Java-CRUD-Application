@@ -408,6 +408,10 @@
 		.data-not-found {
 			width: 85%;
 		}
+
+		.modern-menu {
+			top: 49px;
+		}
 	}
 </style>
 
@@ -489,7 +493,8 @@
 		<div class="employee-details" th:each="employee : ${employees}">
 			<img class="avatar" th:src="@{'https://i.pravatar.cc/200?u=' + ${employee.id}}" alt="Employee Avatar">
 			<div class="details">
-				<p> <i class="fas fa-user icon icon-id"></i><span>ID:</span> <span th:text="${employee.employeeId}"></span>
+				<p> <i class="fas fa-user icon icon-id"></i><span>ID:</span> <span
+						th:text="${employee.employeeId}"></span>
 				</p>
 				<p><i class="fas fa-user-tie icon icon-name"></i><span>Name:</span> <span
 						th:text="${employee.name}"></span></p>

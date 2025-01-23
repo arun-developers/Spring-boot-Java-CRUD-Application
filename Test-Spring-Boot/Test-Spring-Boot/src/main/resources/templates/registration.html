@@ -74,12 +74,13 @@
 		}
 
 		.signup-container {
-			width: 500px;
-			background: #fff;
-			padding: 20px;
+			background: #ffffff;
 			border-radius: 10px;
-			margin-top: 50px;
 			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			width: 100%;
+			max-width: 500px;
+			padding: 30px;
+			margin-top: 50px;
 		}
 
 		.signup-container h1,
@@ -260,6 +261,97 @@
 			display: block;
 			margin-left: 5px;
 		}
+
+		.breadcrumb {
+			cursor: pointer;
+			display: none;
+		}
+
+		.sidebar {
+			top: 0;
+			width: 250px;
+			height: 100%;
+			right: -330px;
+			padding: 20px;
+			z-index: 1000;
+			display: none;
+			color: white;
+			position: absolute;
+			font-weight: bold;
+			background-color: #2d89ef;
+			transition: right 0.4s ease-in-out;
+			box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+		}
+
+		.sidebar.active {
+			right: 0;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		.sidebar a {
+			gap: 10px;
+			color: white;
+			padding: 10px;
+			display: flex;
+			height: 50px;
+			align-items: center;
+			text-decoration: none;
+		}
+
+		.sidebar i {
+			color: #ffeb3b;
+		}
+
+		.sidebar a:hover {
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+		}
+
+		.sidebar .inspiration {
+			text-align: center;
+			padding: 15px;
+			font-size: 1.0rem;
+			font-weight: 400;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+			border-radius: 5px;
+			font-style: italic;
+			color: #ffeb3b;
+		}
+
+		@media screen and (max-width: 600px) {
+			.header .login-signup {
+				display: none;
+			}
+
+			.breadcrumb {
+				display: block;
+				font-size: 1.6rem;
+				color: #ffeb3b;
+			}
+
+			.welcome-container {
+				padding: 10px;
+			}
+
+			.welcome-message {
+				font-size: 1.5rem;
+				text-align: justify;
+			}
+
+			.handshake-icon {
+				text-align: center;
+			}
+
+			.sidebar {
+				height: calc(100vh - 49px);
+				top: 49px;
+				box-shadow: none;
+				font-size: 1.2rem;
+				text-align: left;
+				padding: 15px;
+			}
+		}
 	</style>
 </head>
 
@@ -270,7 +362,7 @@
 		<h1 th:onclick="'window.location.href=\'' + @{/} + '\''">
 			<i class="fas fa-users"></i> Employees Portal (EPM)
 		</h1>
-		<div>
+		<div class="login-signup">
 			<a th:href="@{/login}" class="modern-button">
 				<i class="fas fa-user"></i>
 				Login
@@ -280,8 +372,21 @@
 				Sign Up
 			</a>
 		</div>
+		<div class="breadcrumb" id="menuToggle">
+			<i class="fas fa-bars"></i>
+		</div>
 	</div>
 
+	<!-- Sidebar -->
+	<div class="sidebar" id="sidebar">
+		<div>
+			<a th:href="@{/login}"><i class="fas fa-user"></i> Login</a>
+			<a th:href="@{/signup}"><i class="fas fa-user-plus"></i> Sign Up</a>
+		</div>
+		<div class="inspiration">
+			Great journeys begin with a single step—take yours today!
+		</div>
+	</div>
 
 	<!-- success Message || Error Message -->
 	<div th:if="${successMessage != null || errorMessage != null}" class="toast active" id="toasterToggle">
@@ -342,7 +447,7 @@
 				</select>
 				<span th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="error-message"></span>
 			</div>
-			<button type="submit" class="signup-btn">Submit</button>
+			<button title="Click here to add new user" type="submit" class="signup-btn">Add New User</button>
 
 			<div class="proceed-to-login">
 				<a th:href="@{/login}">Proceed to login!</a>
@@ -359,6 +464,19 @@
 			setTimeout(() => {
 				successToast.classList.remove("active");
 			}, 3000);
+		}
+	});
+	const menuToggle = document.getElementById("menuToggle");
+	const sidebar = document.getElementById("sidebar");
+
+	menuToggle.addEventListener("click", function () {
+		sidebar.classList.toggle("active");
+	});
+
+	// Close sidebar when clicking outside of it
+	document.addEventListener("click", function (event) {
+		if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+			sidebar.classList.remove("active");
 		}
 	});
 </script>
